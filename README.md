@@ -8,12 +8,8 @@ Filed Android Issue Tracker bug:
 
 Screen recording:
 
-```
-
 https://github.com/user-attachments/assets/c76632d7-6eac-4636-ba15-4a0f988efaff
 
-
-```
 
 ## Problem
 
