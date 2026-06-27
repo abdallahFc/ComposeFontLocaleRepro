@@ -2,9 +2,15 @@
 
 Minimal Android repro for a possible Jetpack Compose `ResourceFont` cache issue after runtime app locale changes.
 
-Open a new Android Issue Tracker bug in the Jetpack Compose component:
+Filed Android Issue Tracker bug:
 
-<https://issuetracker.google.com/issues/new?component=612128>
+<https://issuetracker.google.com/issues/528500167>
+
+Screen recording:
+
+```text
+[Add video link or attached screen recording here]
+```
 
 ## Problem
 
@@ -100,84 +106,3 @@ Build: `AI-253.31033.145.2533.15113396`
 - The screen displays `android.os.Process.myPid()` for verification.
 - Logcat tag: `FontLocaleRepro`
 - The optional explicit control uses `R.font.locale_test_font_en_explicit` and `R.font.locale_test_font_ar_explicit`; it is not the main repro path.
-
-## Android Issue Tracker Draft
-
-Use this text when filing the bug:
-
-```text
-Title:
-Compose ResourceFont cache is not invalidated after locale change when the same R.font id resolves to locale-qualified font resource
-
-Jetpack Compose version:
-Compose BOM 2026.02.01
-androidx.compose.ui:ui / ui-text resolved by the BOM: 1.10.4
-
-Jetpack Compose component used:
-Text / ui-text / FontFamily / ResourceFont
-
-Android Studio Build:
-Android Studio 2025.3 — AI-253.31033.145.2533.15113396
-
-Kotlin version:
-2.2.10
-
-Devices/Android versions reproduced on:
-
-* [Device name or Emulator] — Android [API level]
-* [Another device if tested]
-
-Keyboard:
-N/A — this issue is not related to keyboard input.
-
-Summary:
-When a Compose Text uses FontFamily(Font(R.font.locale_test_font)), and the same font resource has locale-qualified alternatives such as res/font/locale_test_font.ttf and res/font-ar/locale_test_font.ttf, changing the app language without killing the process can keep rendering with the previously cached Typeface.
-
-The string resource updates correctly after Activity recreation, but the font can remain stale until the process is killed or the app is cold-started again.
-
-Steps to reproduce:
-
-1. Open the attached sample project.
-2. Run the app in English.
-3. Confirm the screen shows:
-
-   * current language
-   * current locale
-   * current process id
-   * Compose Text using FontFamily(Font(R.font.locale_test_font))
-   * localized stringResource text
-4. Tap "Switch to Arabic".
-5. Confirm the process id stays the same.
-6. Confirm the stringResource text changes to Arabic.
-7. Observe the Compose Text font.
-8. Tap "Switch to English".
-9. Observe the Compose Text font again.
-10. Force stop the app and reopen it.
-11. Observe that the correct font is used after cold start.
-
-Expected behavior:
-Compose should resolve the ResourceFont again using the current locale/configuration after app language change, or the font cache key should change when configuration-qualified resources can resolve to a different font file.
-
-If R.font.locale_test_font resolves to res/font-ar/locale_test_font.ttf after switching to Arabic, Compose Text should render using the Arabic font without requiring a process restart.
-
-Actual behavior:
-Compose can keep using the Typeface cached before the language change. stringResource updates correctly, but the font may remain from the previous locale until the app process is killed and started again.
-
-Why this matters:
-This makes dynamic app language switching inconsistent. XML views can re-inflate and resolve locale-qualified font resources again after Activity recreation, while Compose Text may reuse a stale cached Typeface for the same R.font id.
-
-Sample project:
-[Attach ZIP or add public GitHub repo link]
-
-Screenrecord / screenshots:
-[Attach screenrecord showing locale changes, same process id, stringResource changes, and font remaining stale]
-
-Stack trace:
-N/A — no crash.
-
-Workaround:
-Selecting explicit different font resources per language from LocalConfiguration.current works around the issue, for example using a different FontFamily for Arabic and English. However, the issue is specifically about ResourceFont caching when the same R.font id resolves to different locale-qualified font files.
-
-Additional notes:
-The issue is hidden if the app kills the process during language change because all font caches are cleared. It becomes visible when language switching is handled by updating locale and recreating Activity without process restart.
-```
