@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Compose Font Locale Repro</string>
+    <string name="localized_resource_text">نص stringResource: موارد اللغة العربية مفعلة.</string>
+</resources>
